@@ -1,4 +1,8 @@
 pipeline {
+  parameters {
+    string(name: 'BRANCH', defaultValue: 'master', description: 'Branch to Build')
+  }
+
   agent {
     docker {
       image 'hashicorp/terraform:latest'
@@ -8,39 +12,30 @@ pipeline {
 
   environment {
     AWS_DEFAULT_REGION = 'us-east-1'
+    AWS_CREDENTIALS = 'aws_cred'
   }
 
   stages {
-    stage('terraform init') {
+    stage('Terraform init & fmt') {
       steps {
-        withAWS(credentials: 'terraform_user', region: env.AWS_DEFAULT_REGION) {
-          sh 'terraform init'
+        withAWS(credentials: env.AWS_CREDENTIALS, region: env.AWS_DEFAULT_REGION) {
+          sh 'terraform init; terraform fmt'
         }
       }
     }
 
-    stage('terraform plan') {
+    stage('Terraform Plan') {
       steps {
-        withAWS(credentials: 'terraform_user', region: env.AWS_DEFAULT_REGION) {
+        withAWS(credentials: env.AWS_CREDENTIALS, region: env.AWS_DEFAULT_REGION) {
           sh 'terraform plan -out=tfplan -input=false'
         }
       }
     }
 
-    stage('terraform apply') {
+    stage('Deploying Network Infrastructure') {
       steps {
-        input 'Deploy Infrastructure?'
-        withAWS(credentials: 'terraform_user', region: env.AWS_DEFAULT_REGION) {
+        withAWS(credentials: env.AWS_CREDENTIALS, region: env.AWS_DEFAULT_REGION) {
           sh 'terraform apply tfplan'
-        }
-      }
-    }
-
-    stage('terraform destroy') {
-      steps {
-        input 'Destroy Infrastructure?'
-        withAWS(credentials: 'terraform_user', region: env.AWS_DEFAULT_REGION) {
-          sh 'terraform destroy -auto-approve'
         }
       }
     }
