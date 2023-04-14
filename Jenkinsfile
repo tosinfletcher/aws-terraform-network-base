@@ -3,12 +3,7 @@ pipeline {
     string(name: 'BRANCH', defaultValue: 'master', description: 'Branch to Build')
   }
 
-  agent {
-    docker {
-      image 'hashicorp/terraform:latest'
-      args '-i --entrypoint='
-    }
-  }
+  agent { dockerfile true}
 
   environment {
     AWS_DEFAULT_REGION = 'us-east-1'
