@@ -48,8 +48,7 @@ resource "aws_subnet" "public_1" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                     = "public_1"
-    "kubernetes.io/role/elb" = 1
+    Name = "public_1"
   }
 
   depends_on = [aws_vpc.vpc, aws_internet_gateway.igw]
@@ -63,8 +62,7 @@ resource "aws_subnet" "public_2" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                     = "public_2"
-    "kubernetes.io/role/elb" = 1
+    Name = "public_2"
   }
 
   depends_on = [aws_vpc.vpc, aws_internet_gateway.igw]
@@ -78,8 +76,7 @@ resource "aws_subnet" "public_3" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                     = "public_3"
-    "kubernetes.io/role/elb" = 1
+    Name = "public_3"
   }
 
   depends_on = [aws_vpc.vpc, aws_internet_gateway.igw]
@@ -105,17 +102,17 @@ resource "aws_route_table_association" "public_rt_3" {
 
 
 resource "aws_eip" "eip_1" {
-  vpc = true
+  domain = "vpc"
 }
 
 
 resource "aws_eip" "eip_2" {
-  vpc = true
+  domain = "vpc"
 }
 
 
 resource "aws_eip" "eip_3" {
-  vpc = true
+  domain = "vpc"
 }
 
 
@@ -201,8 +198,7 @@ resource "aws_subnet" "private_1" {
   availability_zone = "us-east-1a"
 
   tags = {
-    Name                              = "private_1"
-    "kubernetes.io/role/internal-elb" = 1
+    Name = "private_1"
   }
 }
 
@@ -213,8 +209,7 @@ resource "aws_subnet" "private_2" {
   availability_zone = "us-east-1b"
 
   tags = {
-    Name                              = "private_2"
-    "kubernetes.io/role/internal-elb" = 1
+    Name = "private_2"
   }
 }
 
@@ -225,8 +220,7 @@ resource "aws_subnet" "private_3" {
   availability_zone = "us-east-1c"
 
   tags = {
-    Name                              = "private_3"
-    "kubernetes.io/role/internal-elb" = 1
+    Name = "private_3"
   }
 }
 
@@ -257,15 +251,7 @@ resource "aws_security_group" "public_sg" {
   vpc_id      = aws_vpc.vpc.id
 
   ingress {
-    description = "SSH from VPC"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "SSH from VPC"
+    description = "Public web traeffic (HTTP)"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -273,7 +259,7 @@ resource "aws_security_group" "public_sg" {
   }
 
   ingress {
-    description = "SSH from VPC"
+    description = "Secure public web traffic (HTTPS)"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -292,4 +278,3 @@ resource "aws_security_group" "public_sg" {
   }
 
 }
-
