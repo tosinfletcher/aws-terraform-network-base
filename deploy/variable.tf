@@ -37,5 +37,3 @@ variable "cidr_private_subnet_3" {
   type    = string
   default = "10.0.6.0/24"
 }
-
-
